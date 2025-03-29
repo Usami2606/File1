@@ -1,25 +1,28 @@
-#include <stdio.h>
+// https://mpitutorial.com/tutorials/mpi-hello-world/
 #include <mpi.h>
-#include <unistd.h> // gethostname()
+#include <stdio.h>
 
-int main(int argc, char* argv[])
-{
-        int myrank, nprocs;
-        char hostname[64]; 
+int main(int argc, char** argv) {
+    // Initialize the MPI environment
+    MPI_Init(NULL, NULL);
 
-        MPI_Init(&argc, &argv);
+    // Get the number of processes
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
-        //ホスト名を取得
-        gethostname(hostname, 64);
-        //rank番号の取得
-        MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
-        //起動プロセス数の取得
-        MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
-        //
-        printf("[%d/%d] my host name is %s!!!\n", myrank, nprocs, hostname);
+    // Get the rank of the process
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
+    // Get the name of the processor
+    char processor_name[MPI_MAX_PROCESSOR_NAME];
+    int name_len;
+    MPI_Get_processor_name(processor_name, &name_len);
 
-        MPI_Finalize();
-        return 0;
+    // Print off a hello world message
+    printf("Hello world from processor %s, rank %d out of %d processors\n",
+           processor_name, world_rank, world_size);
+
+    // Finalize the MPI environment.
+    MPI_Finalize();
 }
-
